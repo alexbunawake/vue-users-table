@@ -1,29 +1,27 @@
-import {createRouter, createWebHistory} from 'vue-router'
-import UsersPage from "@/pages/users/ui/UsersPage.vue";
-import EditUser from "@/pages/users/edit-user/ui/EditUser.vue";
-import CreateUser from "@/pages/users/create-user/ui/CreateUser.vue";
-import NotFound from "@/pages/not-found/ui/NotFound.vue";
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
     path: '/',
-    redirect: '/users'
+    redirect: '/users',
   },
   {
     path: '/users',
-    component: UsersPage,
-  },
-  {
-    path: '/users/:id',
-    component: EditUser
+    component: () => import('@/pages/users').then((mount) => mount.UsersPage),
   },
   {
     path: '/users/new',
-    component: CreateUser
+    component: () => import('@/pages/users/create-user').then((mount) => mount.CreateUser),
   },
   {
-    path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound
-  }
+    path: '/users/:id',
+    component: () => import('@/pages/users/edit-user').then((mount) => mount.EditUser),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/pages/not-found').then((mount) => mount.NotFound),
+  },
 ]
 
 const router = createRouter({

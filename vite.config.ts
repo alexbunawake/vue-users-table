@@ -5,7 +5,6 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from "@tailwindcss/vite";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
@@ -13,6 +12,9 @@ export default defineConfig({
     vueDevTools(),
   ],
   server: {
+    watch: {
+      ignored: ['**/userList.json'],
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3001',

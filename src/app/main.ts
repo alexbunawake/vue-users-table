@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { VueQueryPlugin } from '@tanstack/vue-query'
-import './styles/index.css';
+import './styles/index.css'
 
 const app = createApp(App)
 

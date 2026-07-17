@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev:client": "vite",
+    "dev": "concurrently --kill-others -n client,api -c blue,green \"npm:dev:client\" \"npm:dev:api\"",
     "build": "run-p type-check \"build-only {@}\" --",
-    "api": "json-server --watch userList.json --port 3001",
+    "dev:api": "json-server --watch userList.json --port 3001",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
@@ -16,6 +17,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.2.0",
     "@tanstack/vue-query": "^5.101.2",
     "@vee-validate/zod": "^4.15.1",
     "json-server": "^1.0.0-beta.15",
@@ -31,6 +33,7 @@
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/eslint-config-typescript": "^14.8.0",
     "@vue/tsconfig": "^0.9.1",
+    "concurrently": "^10.0.3",
     "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.69.0",

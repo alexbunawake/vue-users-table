@@ -1,7 +1,15 @@
+import type { User } from '@/entities/user'
+
+export interface UsersResponse {
+  users: User[]
+  total: number
+  pages: number
+}
+
 export interface UsersParams {
-  search?: string
-  sortBy?: 'firstName' | 'lastVisitedAt'
+  page: number
+  limit: number
+  sortBy?: string
   order?: 'asc' | 'desc'
-  page?: number
-  limit?: number
+  search?: Record<string, string>
 }
