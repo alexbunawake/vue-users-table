@@ -23,16 +23,20 @@ const {
 <template>
   <div class="overflow-x-auto min-h-[200px] md:min-h-[235px]">
     <table class="w-full border-collapse">
+      <caption class="sr-only">
+        Users
+      </caption>
       <thead>
         <tr class="border-b text-left">
-          <th class="w-20"></th>
+          <th scope="col" class="w-20"><span class="sr-only">Edit</span></th>
           <ColumnHeader
             field="id"
             label="ID"
+            searchable
             :active-field="sortBy"
             :order="order"
             :search="searchField === 'id' ? searchValue : ''"
-            @update:search="(v) => setSearch('id', v)"
+            @update:search="(value) => setSearch('id', value)"
             @sort="setSort"
           />
           <ColumnHeader
@@ -42,7 +46,7 @@ const {
             :active-field="sortBy"
             :order="order"
             :search="searchField === 'firstName' ? searchValue : ''"
-            @update:search="(v) => setSearch('firstName', v)"
+            @update:search="(value) => setSearch('firstName', value)"
             @sort="setSort"
           />
           <ColumnHeader
@@ -53,7 +57,7 @@ const {
             :order="order"
             @sort="setSort"
             :search="searchField === 'email' ? searchValue : ''"
-            @update:search="(v) => setSearch('email', v)"
+            @update:search="(value) => setSearch('email', value)"
           />
           <ColumnHeader
             field="lastVisitedAt"
@@ -62,7 +66,7 @@ const {
             :order="order"
             @sort="setSort"
           />
-          <th class="w-20">Actions</th>
+          <th scope="col" class="w-20">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -75,8 +79,8 @@ const {
         </tr>
 
         <tr v-else-if="isError">
-          <td>
-            <p class="text-red-500">Couldn't fetch users. Please reload the page</p>
+          <td colspan="6">
+            <p role="alert" class="text-red-500">Couldn't fetch users. Please reload the page</p>
           </td>
         </tr>
 
@@ -90,12 +94,15 @@ const {
 
         <tr v-else v-for="user in data?.users" :key="user.id" class="border-b hover:bg-gray-50">
           <td class="p-2 w-20">
-            <RouterLink :to="`/users/${user.id}`">
-              <PencilIcon :class="['w-5 h-5']" />
+            <RouterLink
+              :to="`/users/${user.id}`"
+              :aria-label="`Edit ${user.firstName} ${user.lastName}`"
+            >
+              <PencilIcon :class="['w-5 h-5']" aria-hidden="true" />
             </RouterLink>
           </td>
           <td class="p-2">{{ user.id }}</td>
-          <td class="p-2">{{ user.firstName }} {{ user.secondName }}</td>
+          <td class="p-2">{{ user.firstName }} {{ user.lastName }}</td>
           <td class="p-2">{{ user.email }}</td>
           <td class="p-2 whitespace-nowrap">{{ formatLastVisited(user.lastVisitedAt) }}</td>
           <td class="p-2 w-20">

@@ -1,6 +1,6 @@
 <template>
-  <Button @click="confirmRemove" variant="danger" size="sm">
-    <TrashIcon class="w-5 h-5" />
+  <Button @click="confirmRemove" variant="danger" size="sm" aria-label="Delete user">
+    <TrashIcon class="w-5 h-5" aria-hidden="true" />
   </Button>
 </template>
 

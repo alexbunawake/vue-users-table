@@ -2,9 +2,14 @@
 import { UserForm } from '@/features/user-form'
 import { useCreateUser } from '@/entities/user'
 
-const { isPending, mutate } = useCreateUser()
+const { isPending, mutate, error } = useCreateUser()
 </script>
 
 <template>
-  <UserForm submit-label="Create user" :is-submitting="isPending" @submit="mutate" />
+  <UserForm
+    submit-label="Create user"
+    :is-submitting="isPending"
+    :error-message="error?.message"
+    @submit="mutate"
+  />
 </template>
