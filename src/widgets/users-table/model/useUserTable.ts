@@ -23,7 +23,7 @@ export function useUsersTable(limit = 5) {
   })
 
   const sortBy = computed({
-    get: () => (route.query.sortBy as string) || 'lastVisitedAt',
+    get: () => (route.query.sortBy as string) || '',
     set: (val) => patchQuery({ sortBy: val, page: undefined }),
   })
 
@@ -54,8 +54,8 @@ export function useUsersTable(limit = 5) {
   const params = computed<UsersParams>(() => ({
     page: page.value,
     limit,
-    sortBy: sortBy.value,
-    order: order.value,
+    sortBy: sortBy.value || 'lastVisitedAt',
+    order: sortBy.value ? order.value : 'desc',
     search: searchValue.value ? { [searchField.value]: searchValue.value } : undefined,
   }))
 
