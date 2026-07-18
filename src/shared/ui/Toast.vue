@@ -24,7 +24,12 @@ const icons = {
 
 <template>
   <Teleport to="body">
-    <div class="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-relevant="additions"
+      class="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]"
+    >
       <TransitionGroup name="toast">
         <div
           v-for="toast in toasts"
@@ -32,10 +37,15 @@ const icons = {
           class="flex items-start gap-2 border rounded-lg shadow-lg p-3"
           :class="styles[toast.type]"
         >
-          <component :is="icons[toast.type]" class="w-5 h-5 shrink-0 mt-0.5" />
+          <component :is="icons[toast.type]" class="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
           <span class="text-sm flex-1">{{ toast.message }}</span>
-          <button @click="remove(toast.id)" class="shrink-0">
-            <XMarkIcon class="w-4 h-4 opacity-60 hover:opacity-100" />
+          <button
+            type="button"
+            aria-label="Dismiss notification"
+            @click="remove(toast.id)"
+            class="shrink-0"
+          >
+            <XMarkIcon class="w-4 h-4 opacity-60 hover:opacity-100" aria-hidden="true" />
           </button>
         </div>
       </TransitionGroup>

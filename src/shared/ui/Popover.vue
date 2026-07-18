@@ -1,14 +1,21 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, useId } from 'vue'
 import { useThrottleFn } from '@/shared/lib/useThrottleFn.ts'
+
+const props = defineProps<{
+  label?: string
+}>()
 
 const open = ref(false)
 const triggerRef = ref<HTMLElement | null>(null)
 const popoverRef = ref<HTMLElement | null>(null)
 const pos = ref({ top: 0, left: 0 })
+const popoverId = useId()
 
 const POPOVER_WIDTH = 240
 const MARGIN = 8
+
+const FOCUSABLE = 'input, select, textarea, button, a[href], [tabindex]:not([tabindex="-1"])'
 
 function updatePosition() {
   if (!triggerRef.value) {
@@ -31,9 +38,27 @@ function updatePosition() {
   pos.value = { top, left }
 }
 
-function toggle() {
-  if (!open.value) updatePosition()
-  open.value = !open.value
+function close(returnFocus = true) {
+  if (!open.value) return
+
+  open.value = false
+
+  if (returnFocus) {
+    triggerRef.value?.querySelector<HTMLElement>('button')?.focus()
+  }
+}
+
+async function toggle() {
+  if (open.value) {
+    close()
+    return
+  }
+
+  updatePosition()
+  open.value = true
+
+  await nextTick()
+  popoverRef.value?.querySelector<HTMLElement>(FOCUSABLE)?.focus()
 }
 
 function onClickOutside(e: MouseEvent) {
@@ -44,34 +69,52 @@ function onClickOutside(e: MouseEvent) {
     popoverRef.value &&
     !popoverRef.value.contains(t)
   ) {
-    open.value = false
+    close(false)
   }
+}
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') close()
 }
 
 const throttledUpdate = useThrottleFn(updatePosition, 16)
 
 onMounted(() => {
   document.addEventListener('click', onClickOutside)
+  document.addEventListener('keydown', onKeydown)
   window.addEventListener('resize', throttledUpdate)
   window.addEventListener('scroll', throttledUpdate, true)
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', onClickOutside)
+  document.removeEventListener('keydown', onKeydown)
   window.removeEventListener('resize', throttledUpdate)
   window.removeEventListener('scroll', throttledUpdate, true)
 })
 </script>
 
 <template>
-  <div ref="triggerRef" class="inline-block">
-    <button @click.stop="toggle"><slot name="trigger" /></button>
+  <div ref="triggerRef" class="inline-flex items-center">
+    <button
+      type="button"
+      :aria-label="props.label"
+      :aria-expanded="open"
+      :aria-controls="open ? popoverId : undefined"
+      aria-haspopup="dialog"
+      @click.stop="toggle"
+    >
+      <slot name="trigger" />
+    </button>
   </div>
 
   <Teleport to="body">
     <div
       v-if="open"
+      :id="popoverId"
       ref="popoverRef"
+      role="dialog"
+      :aria-label="props.label"
       class="fixed z-50 bg-white border rounded shadow-lg p-3"
       :style="{
         top: pos.top + 'px',
