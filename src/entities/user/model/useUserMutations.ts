@@ -16,8 +16,7 @@ export function useCreateUser() {
       await client.invalidateQueries({ queryKey: ['users'] })
       toast.success('User created successfully')
       router.push('/users')
-    },
-    retry: 1,
+    }
   })
 }
 
@@ -32,8 +31,7 @@ export function useUpdateUser() {
       await client.invalidateQueries({ queryKey: [`user:${variables.id}`] })
 
       toast.success('User updated successfully')
-    },
-    retry: 1,
+    }
   })
 }
 
@@ -46,7 +44,6 @@ export function useDeleteUser() {
     onSuccess: async () => {
       await client.invalidateQueries({ queryKey: ['users'] })
       toast.success('User deleted successfully')
-    },
-    retry: 1,
+    }
   })
 }
