@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ToastClose, ToastDescription, ToastProvider, ToastRoot, ToastViewport } from 'reka-ui'
-import { useToast } from '../lib/useToast'
+import { useToast } from '../lib/toast'
 import {
   CheckCircleIcon,
   XCircleIcon,

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { readStorage } from '@/shared/lib/safeStorage'
+import { readStorage } from '@/shared/lib/storage'
 import { visitedSchema } from '@/features/user-table-controls'
 
 export const SORTABLE_FIELDS = ['id', 'firstName', 'email', 'lastVisitedAt'] as const

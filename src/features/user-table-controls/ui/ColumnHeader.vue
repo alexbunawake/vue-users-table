@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, useId } from 'vue'
 import { Popover } from '@/shared/ui'
-import { useDebounceFn } from '@/shared/lib/useDebounceFn'
+import { useDebounceFn } from '@/shared/lib/debounce'
 import { ChevronUpIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 
 type Order = 'asc' | 'desc'

@@ -1,6 +1,6 @@
 import { computed, watch, type Ref } from 'vue'
 import type { User } from '@/entities/user'
-import { useSelection } from '@/shared/lib/useSelection'
+import { useSelection } from '@/shared/lib/selection'
 
 export function useUsersSelection(users: Ref<User[]>, resetOn: unknown[]) {
   const { ids, count, isSelected, toggle, setMany, clear } = useSelection<string>()

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { createUser, updateUser, deleteUser } from './userApi.ts'
 import type { UserFormValues } from '../model/schema.ts'
-import { useToast } from '@/shared/lib/useToast'
+import { useToast } from '@/shared/lib/toast'
 
 export function useCreateUser() {
   const client = useQueryClient()

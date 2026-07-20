@@ -12,7 +12,7 @@
 import { CreateUserForm } from '@/features/manage-users/create-user'
 import { ArrowLongLeftIcon } from '@heroicons/vue/24/outline'
 import { ROUTES, USERS_RETURN_PATH_KEY } from '@/shared/config'
-import { useReturnPath } from '@/shared/lib/useReturnPath'
+import { useReturnPath } from '@/shared/lib/storage'
 
 const backPath = useReturnPath(USERS_RETURN_PATH_KEY, ROUTES.usersList).resolve()
 </script>

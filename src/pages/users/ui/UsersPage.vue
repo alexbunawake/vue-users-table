@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { UsersTable } from '@/widgets/users-table'
 import { Button } from '@/shared/ui'
 import { ROUTES, USERS_RETURN_PATH_KEY } from '@/shared/config'
-import { useReturnPath } from '@/shared/lib/useReturnPath'
+import { useReturnPath } from '@/shared/lib/storage'
 
 const route = useRoute()
 const { save } = useReturnPath(USERS_RETURN_PATH_KEY, ROUTES.usersList)

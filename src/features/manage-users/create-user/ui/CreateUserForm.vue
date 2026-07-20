@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router'
 import { UserForm, useCreateUser, type UserFormValues } from '@/entities/user'
 import { ROUTES, USERS_RETURN_PATH_KEY } from '@/shared/config'
-import { useReturnPath } from '@/shared/lib/useReturnPath'
+import { useReturnPath } from '@/shared/lib/storage'
 
 const router = useRouter()
 const { resolve } = useReturnPath(USERS_RETURN_PATH_KEY, ROUTES.usersList)

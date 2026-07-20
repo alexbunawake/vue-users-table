@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { formatLastVisited } from '@/entities/user'
-import { useScrollOnChange } from '@/shared/lib/useScrollOnChange'
+import { useScrollOnChange } from '@/shared/lib/scroll'
 import { PencilIcon } from '@heroicons/vue/24/outline'
 import { Checkbox, PageSizeSelect, Pagination, Spinner } from '@/shared/ui'
 import { ROUTES } from '@/shared/config'

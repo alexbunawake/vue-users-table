@@ -13,7 +13,7 @@ import { ArrowLongLeftIcon } from '@heroicons/vue/24/outline'
 import { EditUserForm } from '@/features/manage-users/edit-user'
 import { useRoute } from 'vue-router'
 import { ROUTES, USERS_RETURN_PATH_KEY } from '@/shared/config'
-import { useReturnPath } from '@/shared/lib/useReturnPath'
+import { useReturnPath } from '@/shared/lib/storage'
 
 const route = useRoute()
 const userId = route.params.id as string

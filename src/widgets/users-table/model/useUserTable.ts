@@ -1,7 +1,7 @@
 import { computed, watch } from 'vue'
 import { useUsers, type UsersParams } from '@/entities/user'
-import { useQueryState } from '@/shared/lib/useQueryState'
-import { writeStorage } from '@/shared/lib/safeStorage'
+import { useQueryState } from '@/shared/lib/query-state'
+import { writeStorage } from '@/shared/lib/storage'
 import {
   DEFAULT_ORDER,
   PAGE_SIZE_STORAGE_KEY,
