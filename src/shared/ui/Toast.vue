@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useToast } from '@/shared/lib/toast/useToast'
+import { ToastClose, ToastDescription, ToastProvider, ToastRoot, ToastViewport } from 'reka-ui'
+import { useToast } from '../lib/useToast'
 import {
   CheckCircleIcon,
   XCircleIcon,
@@ -8,6 +9,12 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const { toasts, remove } = useToast()
+
+function onAnimationEnd(event: AnimationEvent, id: number) {
+  const element = event.currentTarget as HTMLElement
+
+  if (element.dataset.state === 'closed') remove(id)
+}
 
 const styles = {
   success: 'bg-green-50 border-green-200 text-green-800',
@@ -23,50 +30,57 @@ const icons = {
 </script>
 
 <template>
-  <Teleport to="body">
-    <div
-      role="status"
-      aria-live="polite"
-      aria-relevant="additions"
-      class="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]"
+  <ToastProvider :duration="3000" swipe-direction="right">
+    <ToastRoot
+      v-for="toast in toasts"
+      :key="toast.id"
+      type="foreground"
+      class="toast flex items-start gap-2 border rounded-lg shadow-lg p-3"
+      :class="styles[toast.type]"
+      @animationend="onAnimationEnd($event, toast.id)"
     >
-      <TransitionGroup name="toast">
-        <div
-          v-for="toast in toasts"
-          :key="toast.id"
-          class="flex items-start gap-2 border rounded-lg shadow-lg p-3"
-          :class="styles[toast.type]"
-        >
-          <component :is="icons[toast.type]" class="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
-          <span class="text-sm flex-1">{{ toast.message }}</span>
-          <button
-            type="button"
-            aria-label="Dismiss notification"
-            @click="remove(toast.id)"
-            class="shrink-0"
-          >
-            <XMarkIcon class="w-4 h-4 opacity-60 hover:opacity-100" aria-hidden="true" />
-          </button>
-        </div>
-      </TransitionGroup>
-    </div>
-  </Teleport>
+      <component :is="icons[toast.type]" class="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
+      <ToastDescription class="text-sm flex-1">{{ toast.message }}</ToastDescription>
+      <ToastClose aria-label="Dismiss notification" class="shrink-0 cursor-pointer">
+        <XMarkIcon class="w-4 h-4 opacity-60 hover:opacity-100" aria-hidden="true" />
+      </ToastClose>
+    </ToastRoot>
+
+    <ToastViewport
+      class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)] outline-none"
+    />
+  </ToastProvider>
 </template>
 
-<style scoped>
-.toast-enter-active,
-.toast-leave-active {
-  transition: all 0.3s ease;
+<style>
+.toast[data-state='open'] {
+  animation: toast-in 0.3s ease;
 }
-.toast-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
+.toast[data-state='closed'] {
+  animation: toast-out 0.3s ease;
 }
-.toast-leave-to {
-  opacity: 0;
-  transform: translateX(100%);
+.toast[data-swipe='move'] {
+  transform: translateX(var(--reka-toast-swipe-move-x));
 }
-.toast-move {
-  transition: transform 0.3s ease;
+.toast[data-swipe='cancel'] {
+  transform: translateX(0);
+  transition: transform 200ms ease-out;
+}
+.toast[data-swipe='end'] {
+  animation: toast-out 0.2s ease;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
 </style>

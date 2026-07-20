@@ -12,10 +12,8 @@ const toasts = ref<Toast[]>([])
 
 let seq = 0
 
-function add(message: string, type: ToastType, duration = 3000) {
-  const id = ++seq
-  toasts.value.push({ id, message, type })
-  setTimeout(() => remove(id), duration)
+function add(message: string, type: ToastType) {
+  toasts.value.push({ id: ++seq, message, type })
 }
 
 function remove(id: number) {

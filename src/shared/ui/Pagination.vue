@@ -1,58 +1,66 @@
 <script setup lang="ts">
-const props = defineProps<{
-  page: number
-  totalPages: number
-}>()
+import {
+  PaginationEllipsis,
+  PaginationList,
+  PaginationListItem,
+  PaginationNext,
+  PaginationPrev,
+  PaginationRoot,
+} from 'reka-ui'
 
-const emit = defineEmits<{
-  (e: 'update:page', value: number): void
-}>()
+withDefaults(
+  defineProps<{
+    total: number
+    itemsPerPage: number
+    siblings?: number
+  }>(),
+  { siblings: 1 },
+)
 
-function go(target: number) {
-  if (target < 1 || target > props.totalPages || target === props.page) return
-  emit('update:page', target)
-}
+const page = defineModel<number>('page', { required: true })
+
+const navButtonClass =
+  'px-2 sm:px-3 py-1 rounded cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100'
 </script>
 
 <template>
-  <nav
-    v-if="totalPages > 1"
-    aria-label="Pagination"
-    class="flex gap-1 items-center justify-center mt-4"
+  <PaginationRoot
+    v-if="total > itemsPerPage"
+    v-model:page="page"
+    :total="total"
+    :items-per-page="itemsPerPage"
+    :sibling-count="siblings"
+    show-edges
+    class="mt-4"
   >
-    <button
-      type="button"
-      :disabled="page === 1"
-      aria-label="Previous page"
-      @click="go(page - 1)"
-      class="px-3 py-1 rounded disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100"
-    >
-      <span aria-hidden="true">←</span>
-    </button>
+    <PaginationList v-slot="{ items }" class="flex flex-wrap gap-1 items-center justify-center">
+      <PaginationPrev :class="navButtonClass" aria-label="Previous page">
+        <span aria-hidden="true">←</span>
+      </PaginationPrev>
 
-    <button
-      v-for="pageNum in totalPages"
-      :key="pageNum"
-      type="button"
-      :aria-label="`Page ${pageNum}`"
-      :aria-current="pageNum === page ? 'page' : undefined"
-      @click="go(pageNum)"
-      :class="[
-        'px-3 py-1 rounded min-w-[2.25rem]',
-        pageNum === page ? 'bg-blue-500 text-white' : 'hover:bg-gray-100',
-      ]"
-    >
-      {{ pageNum }}
-    </button>
+      <template v-for="(item, index) in items">
+        <PaginationListItem
+          v-if="item.type === 'page'"
+          :key="`page-${item.value}`"
+          :value="item.value"
+          :aria-label="`Page ${item.value}`"
+          class="px-2 sm:px-3 py-1 rounded min-w-[2rem] sm:min-w-[2.25rem] cursor-pointer hover:bg-gray-100 data-[selected]:bg-blue-500 data-[selected]:text-white"
+        >
+          {{ item.value }}
+        </PaginationListItem>
+        <PaginationEllipsis
+          v-else
+          :key="`ellipsis-${index}`"
+          :index="index"
+          class="px-1 sm:px-2 py-1 text-gray-400 select-none"
+        >
+          &#8230;
+        </PaginationEllipsis>
+      </template>
 
-    <button
-      type="button"
-      :disabled="page === totalPages"
-      aria-label="Next page"
-      @click="go(page + 1)"
-      class="px-3 py-1 rounded disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100"
-    >
-      <span aria-hidden="true">→</span>
-    </button>
-  </nav>
+      <PaginationNext :class="navButtonClass" aria-label="Next page">
+        <span aria-hidden="true">→</span>
+      </PaginationNext>
+    </PaginationList>
+  </PaginationRoot>
 </template>
