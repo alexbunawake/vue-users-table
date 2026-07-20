@@ -1,8 +1,14 @@
-export type { User } from './model/types.ts'
-export type { UserFormValues } from './model/schema.ts'
-export { userFormSchema } from './model/schema.ts'
+export type { User } from './model/types'
+export type { UserFormValues } from './model/schema'
+export { userFormSchema } from './model/schema'
 export type { UsersParams } from './api/types'
-export { useUsers } from './model/useUsers'
-export { useUser } from './model/useUser'
-export { useCreateUser, useDeleteUser, useUpdateUser } from './model/useUserMutations'
+export { useUsers } from './api/useUsers.ts'
+export { useUser } from './api/useUser.ts'
+export {
+  useCreateUser,
+  useDeleteUser,
+  useDeleteUsers,
+  useUpdateUser,
+} from './api/useUserMutations.ts'
 export { formatLastVisited } from './lib/formatLastVisited'
+export { default as UserForm } from './ui/UserForm.vue'

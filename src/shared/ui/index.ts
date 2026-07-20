@@ -1,5 +1,7 @@
 export { default as Button } from './Button.vue'
+export { default as Checkbox } from './Checkbox.vue'
 export { default as Spinner } from './Spinner.vue'
 export { default as Popover } from './Popover.vue'
 export { default as Pagination } from './Pagination.vue'
+export { default as PageSizeSelect } from './PageSizeSelect.vue'
 export { default as Toast } from './Toast.vue'

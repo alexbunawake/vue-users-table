@@ -1,16 +1,17 @@
-import type { User, UserFormValues, UsersParams } from '@/entities/user'
-import { formatUsersParams } from '@/entities/user/api/formatParams.ts'
-import type { UsersResponse } from '@/entities/user/api/types.ts'
+import type { User } from '../model/types'
+import type { UserFormValues } from '../model/schema'
+import { formatUsersParams } from './formatParams'
+import type { UsersParams, UsersResponse } from './types'
 import { http } from '@/shared/api'
 
 interface UsersEnvelope {
-  data: User[]
-  items: number
-  pages: number
+  data?: User[]
+  items?: number
+  pages?: number
 }
 
-export async function getUsers(params: UsersParams): Promise<UsersResponse> {
-  const envelope = await http<UsersEnvelope>(`/api/users${formatUsersParams(params)}`)
+export async function getUsers(params: UsersParams, signal?: AbortSignal): Promise<UsersResponse> {
+  const envelope = await http<UsersEnvelope>(`/api/users${formatUsersParams(params)}`, { signal })
 
   return {
     users: envelope.data ?? [],
@@ -19,8 +20,8 @@ export async function getUsers(params: UsersParams): Promise<UsersResponse> {
   }
 }
 
-export function getUser(id: string): Promise<User> {
-  return http<User>(`/api/users/${id}`)
+export function getUser(id: string, signal?: AbortSignal): Promise<User> {
+  return http<User>(`/api/users/${id}`, { signal })
 }
 
 export function createUser(values: UserFormValues): Promise<User> {

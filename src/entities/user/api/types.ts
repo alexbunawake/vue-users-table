@@ -1,4 +1,4 @@
-import type { User } from '@/entities/user'
+import type { User } from '../model/types'
 
 export interface UsersResponse {
   users: User[]
@@ -11,5 +11,11 @@ export interface UsersParams {
   limit: number
   sortBy?: string
   order?: 'asc' | 'desc'
-  search?: Record<string, string>
+  search?: SearchGroup[]
+  visitedFrom?: number
+}
+
+export interface SearchGroup {
+  fields: string[]
+  value: string
 }
