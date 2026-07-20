@@ -11,7 +11,9 @@ export class HttpError extends Error {
 async function readBody(res: Response): Promise<unknown> {
   const text = await res.text()
 
-  if (!text) return undefined
+  if (!text) {
+    return undefined
+  }
 
   try {
     return JSON.parse(text)
@@ -21,11 +23,16 @@ async function readBody(res: Response): Promise<unknown> {
 }
 
 function errorMessage(res: Response, body: unknown): string {
-  if (typeof body === 'string' && body) return body
+  if (typeof body === 'string' && body) {
+    return body
+  }
 
   if (body && typeof body === 'object' && 'message' in body) {
     const { message } = body as { message?: unknown }
-    if (typeof message === 'string' && message) return message
+
+    if (typeof message === 'string' && message) {
+      return message
+    }
   }
 
   return res.statusText || `Request failed with status ${res.status}`

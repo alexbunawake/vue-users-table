@@ -1,74 +1,114 @@
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useUsers } from '@/entities/user'
-import type { UsersParams } from '@/entities/user'
+import { computed, watch } from 'vue'
+import { useUsers, type UsersParams } from '@/entities/user'
+import { useQueryState } from '@/shared/lib/useQueryState'
+import { writeStorage } from '@/shared/lib/safeStorage'
+import {
+  DEFAULT_ORDER,
+  PAGE_SIZE_STORAGE_KEY,
+  SEARCHABLE_FIELDS,
+  SEARCH_FIELD_MAP,
+  SORTABLE_FIELDS,
+  storedPageSize,
+  tableQuerySchema,
+  type Filters,
+  type Order,
+  type PageSize,
+  type SearchField,
+  type SortField,
+  type TableQuery,
+} from './tableQuery'
+import { visitedSince, type VisitedPreset } from '@/features/user-table-controls'
 
-export function useUsersTable(limit = 5) {
-  const route = useRoute()
-  const router = useRouter()
+function isSortField(field: string): field is SortField {
+  return (SORTABLE_FIELDS as readonly string[]).includes(field)
+}
 
-  function patchQuery(patch: Record<string, string | undefined>) {
-    const next = { ...route.query, ...patch }
+export function useUsersTable() {
+  const { state, set, has } = useQueryState(tableQuerySchema, { resetOnChange: ['page'] })
 
-    Object.keys(next).forEach((key) => {
-      if (next[key] === undefined || next[key] === '') delete next[key]
-    })
-
-    router.push({ query: next })
+  if (!has('limit')) {
+    set({ limit: storedPageSize() }, { replace: true })
   }
 
   const page = computed({
-    get: () => Number(route.query.page) || 1,
-    set: (val) => patchQuery({ page: String(val) }),
+    get: () => state.value.page,
+    set: (value: number) => set({ page: value }),
   })
 
-  const sortBy = computed({
-    get: () => (route.query.sortBy as string) || '',
-    set: (val) => patchQuery({ sortBy: val, page: undefined }),
-  })
+  const limit = computed(() => state.value.limit)
+  const sortBy = computed(() => state.value.sortBy)
+  const order = computed(() => state.value.order)
+  const visited = computed(() => state.value.visited)
 
-  const order = computed({
-    get: () => (route.query.order as 'asc' | 'desc') || 'desc',
-    set: (val) => patchQuery({ order: val, page: undefined }),
-  })
+  const activeSearchFields = computed(() => SEARCHABLE_FIELDS.filter((field) => state.value[field]))
 
-  const searchField = computed(() => (route.query.searchField as string) || '')
-  const searchValue = computed(() => (route.query.searchValue as string) || '')
+  const filters = computed<Filters>(() =>
+    Object.fromEntries(activeSearchFields.value.map((field) => [field, state.value[field]])),
+  )
 
-  function setSort(field: string, order: 'asc' | 'desc' | null) {
-    if (order === null) {
-      patchQuery({ sortBy: undefined, order: undefined, page: undefined })
-    } else {
-      patchQuery({ sortBy: field, order, page: undefined })
+  function setSort(field: string, nextOrder: Order | null) {
+    if (nextOrder === null || !isSortField(field)) {
+      set({ sortBy: '', order: DEFAULT_ORDER }, { replace: true })
+      return
     }
+
+    set({ sortBy: field, order: nextOrder }, { replace: true })
   }
 
-  function setSearch(field: string, value: string) {
-    patchQuery({
-      searchField: value ? field : undefined,
-      searchValue: value || undefined,
-      page: undefined,
-    })
+  function setFilter(field: SearchField, value: string) {
+    set({ [field]: value } as Partial<TableQuery>, { replace: true })
+  }
+
+  function setVisited(value: VisitedPreset) {
+    set({ visited: value }, { replace: true })
+  }
+
+  function setLimit(value: PageSize) {
+    writeStorage('local', PAGE_SIZE_STORAGE_KEY, String(value))
+    set({ limit: value }, { replace: true })
+  }
+
+  function clearFilters() {
+    set({ id: '', name: '', email: '', visited: '' }, { replace: true })
   }
 
   const params = computed<UsersParams>(() => ({
     page: page.value,
-    limit,
-    sortBy: sortBy.value || 'lastVisitedAt',
-    order: sortBy.value ? order.value : 'desc',
-    search: searchValue.value ? { [searchField.value]: searchValue.value } : undefined,
+    limit: limit.value,
+    sortBy: sortBy.value,
+    order: sortBy.value ? order.value : DEFAULT_ORDER,
+    search: activeSearchFields.value.map((field) => ({
+      fields: SEARCH_FIELD_MAP[field],
+      value: state.value[field],
+    })),
+    visitedFrom: visitedSince(visited.value, Date.now()),
   }))
 
-  const query = useUsers(params)
+  const usersQuery = useUsers(params)
+
+  watch(
+    () => usersQuery.data.value?.pages,
+    (totalPages) => {
+      if (totalPages === undefined) return
+
+      const lastPage = Math.max(totalPages, 1)
+
+      if (page.value > lastPage) set({ page: lastPage }, { replace: true })
+    },
+  )
 
   return {
-    ...query,
+    ...usersQuery,
     page,
+    limit,
     sortBy,
     order,
-    searchField,
-    searchValue,
+    visited,
+    filters,
     setSort,
-    setSearch,
+    setFilter,
+    setVisited,
+    setLimit,
+    clearFilters,
   }
 }
