@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { type UserFormValues, useUpdateUser, useUser } from '@/entities/user'
-import { UserForm } from '@/features/user-form'
+import { type UserFormValues, UserForm, useUpdateUser, useUser } from '@/entities/user'
 import { Spinner } from '@/shared/ui'
 
 const props = defineProps<{ userId: string }>()

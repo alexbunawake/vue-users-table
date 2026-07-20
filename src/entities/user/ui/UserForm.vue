@@ -2,7 +2,7 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { Button } from '@/shared/ui'
-import { userFormSchema, type UserFormValues } from '@/entities/user'
+import { userFormSchema, type UserFormValues } from '../model/schema'
 
 const props = defineProps<{
   initialValues?: Partial<UserFormValues>
